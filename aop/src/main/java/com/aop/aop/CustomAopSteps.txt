@@ -1,0 +1,38 @@
+How to make Custom Annotation?
+1)	@Repository
+	public class Dao1 {
+	
+		@TrackTime
+		public String retrieveSomething() {
+			return "Dao1";
+		}
+		
+	}
+	
+2)	import java.lang.annotation.ElementType;
+	import java.lang.annotation.Retention;
+	import java.lang.annotation.RetentionPolicy;
+	import java.lang.annotation.Target;
+	
+	//where to use...in class or methods
+	@Target(ElementType.METHOD)
+	//when to use...runtime/after excution/before Exceution
+	@Retention(RetentionPolicy.RUNTIME)
+	public @interface TrackTime {
+	
+	}
+	
+3)
+	//custom annotation
+	@Pointcut("@annotation(com.aop.aop.aspect.TrackTime)")
+	public void trackTimeAnnotation() {}
+	
+4)
+	@Around("com.aop.aop.aspect.CommonJoinPointConfig.trackTimeAnnotation()")
+	public void around(/* Joinpoint joinPoint */ProceedingJoinPoint joinPoint) throws Throwable {
+		// Below is the advice
+		long startTime = System.currentTimeMillis();
+		joinPoint.proceed();
+		long timeTaken = System.currentTimeMillis() - startTime;
+		logger.info("Total Time taken {}", timeTaken);
+	}
